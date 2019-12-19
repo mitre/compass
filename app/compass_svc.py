@@ -39,7 +39,7 @@ class CompassService:
     async def generate_layer(self, request):
         abilities = await self.services.get('data_svc').locate('abilities')
 
-        layer = self.get_layer_boilerplate(name='Library', description='full set of techniques available')
+        layer = self.get_layer_boilerplate(name='All-Abilities', description='full set of techniques available')
         for ability in abilities:
             technique = {
                 'techniqueID': ability.technique_id,
