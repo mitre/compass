@@ -10,6 +10,7 @@ function generateLayer() {
         downloadAnchorNode.remove();
     }
 
-    let postData = {'all': true};
+    let selectionAdversaryID = $('#layer-selection-adversary option:selected').attr('value');
+    let postData = selectionAdversaryID ? {'index':'adversary', 'adversary_id': selectionAdversaryID} : {'index': 'all'};
     restRequest('POST', postData, downloadObjectAsJson, '/plugin/compass/layer');
 }

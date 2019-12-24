@@ -20,6 +20,15 @@
                         <div class="column section-border" style="flex:37%;text-align:left;padding:15px;">
                             <h1 style="font-size:70px;margin-top:-20px;">Compass</h1>
                             <h2 style="margin-top:-55px">find your way</h2>
+                            <br><br>
+                            <div id="layerSelectionAdversary">
+                                <select id="layer-selection-adversary" style="margin-top:-15px">
+                                  <option value="" selected>Select an Adversary (All)</option>
+                                    {% for adv in adversaries %}
+                                        <option value="{{ adv.adversary_id }}">{{ adv.name }}</option>
+                                    {% endfor %}}
+                                </select>
+                            </div>
                             <button id="generateLayer" type="button" class="button-success"
                                     style="" onclick="generateLayer()">Generate Layer</button>
                         </div>
