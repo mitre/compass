@@ -10,4 +10,5 @@ async def enable(services):
     compass_svc = CompassService(services)
     app.router.add_static('/compass', 'plugins/compass/static/', append_version=True)
     app.router.add_route('POST', '/plugin/compass/layer', compass_svc.generate_layer)
+    app.router.add_route('POST', '/plugin/compass/adversary', compass_svc.create_adversary_from_layer)
     app.router.add_route('GET', '/plugin/compass/gui', compass_svc.splash)
