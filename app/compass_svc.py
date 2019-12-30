@@ -88,6 +88,40 @@ class CompassService:
 
         return web.json_response(layer)
 
+    @staticmethod
+    def extract_techniques(request_body):
+        techniques = request_body.get('techniques')
+        adversary_techniques = set()
+        for technique in techniques:
+            if technique.get('score') > 0:
+                technique_id = technique.get('techniqueID')
+                adversary_techniques.add(technique_id)
+        return adversary_techniques
+
+    async def build_phases(self, adversary_techniques):
+        phases = []
+        for technique_id in adversary_techniques:
+            abilities = await self.data_svc.locate('abilities', match=dict(technique_id=technique_id))
+            for ab in abilities:
+                phases.append(dict(id=ab.ability_id, phase='1'))
+        return phases
+
+    async def read_layer(self, request):
+        chunks = []
+        reader = await request.multipart()
+        while True:
+            field = await reader.next()
+            if not field:
+                break
+            while True:
+                chunk = await field.read_chunk()
+                if not chunk:
+                    break
+                chunks.append(chunk)
+        body = b''.join(chunks)
+        request_body = json.loads(body)
+        return request_body
+
     @check_authorization
     async def create_adversary_from_layer(self, request):
         """
@@ -97,49 +131,18 @@ class CompassService:
         :return:
         """
         try:
-            chunks = []
-            reader = await request.multipart()
-            while True:
-                field = await reader.next()
-                if not field:
-                    break
-                filename = field.filename
-                while True:
-                    chunk = await field.read_chunk()
-                    if not chunk:
-                        break
-                    chunks.append(chunk)
-            body = b''.join(chunks)
-            request_body = json.loads(body)
+            request_body = await self.read_layer(request)
         except:
             return web.HTTPBadRequest()
 
-        from collections import defaultdict
         adversary_data = dict(i=str(uuid.uuid4()),
                               name=request_body.get('name'),
-                              description=request_body.get('description'),
-                              phases=defaultdict(list))
-        adversary_techniques = []
+                              description=request_body.get('description'))
 
-        techniques = request_body.get('techniques')
-
-        for technique in techniques:
-            if technique.get('score') > 0:
-                technique_id = technique.get('techniqueID')
-                adversary_techniques.append(technique_id)
-
-        for technique_id in set(adversary_techniques):
-            abilities = await self.data_svc.locate('abilities', match=dict(technique_id=technique_id))
-            print(abilities)
-            for ab in abilities:
-                if ab.display not in adversary_data['phases']['1']:
-                    adversary_data['phases']['1'].append(ab.display)
-
-        adversary_data['phases'] = dict(adversary_data['phases'])
-        pprint(adversary_data)
+        adversary_techniques = self.extract_techniques(request_body)
+        adversary_data['phases'] = await self.build_phases(adversary_techniques)
         adversary = await self.rest_svc.persist_adversary(adversary_data)
-        print(adversary)
 
         if adversary:
-            return web.json_response('hello')
+            return web.json_response('adversary created')
         raise web.HTTPBadRequest()
