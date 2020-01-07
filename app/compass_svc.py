@@ -120,7 +120,7 @@ class CompassService:
         """
         try:
             request_body = await self.read_layer(request)
-        except:
+        except json.decoder.JSONDecodeError:
             return web.HTTPBadRequest()
 
         adversary_data = dict(i=str(uuid.uuid4()),
