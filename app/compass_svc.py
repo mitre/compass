@@ -3,6 +3,7 @@ import uuid
 
 from aiohttp import web
 from aiohttp_jinja2 import template
+
 from app.service.auth_svc import check_authorization
 
 
