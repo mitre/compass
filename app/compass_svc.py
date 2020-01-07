@@ -3,19 +3,7 @@ import uuid
 
 from aiohttp import web
 from aiohttp_jinja2 import template
-
-
-from pprint import pprint # TODO: Remove
-
-def check_authorization(func):
-    async def process(func, *args, **params):
-        return await func(*args, **params)
-
-    async def helper(*args, **params):
-        await args[0].auth_svc.check_permissions(args[1])
-        result = await process(func, *args, **params)
-        return result
-    return helper
+from app.service.auth_svc import check_authorization
 
 
 class CompassService:
