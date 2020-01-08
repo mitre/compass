@@ -42,3 +42,6 @@ function uploadAdversaryLayer() {
     })
 }
 
+function openHelp() {
+    document.getElementById("duk-modal-compass").style.display="block";
+}

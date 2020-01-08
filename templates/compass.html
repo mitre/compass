@@ -6,6 +6,7 @@
          <link rel="stylesheet" href="/gui/css/shared.css">
          <link rel="stylesheet" href="/gui/css/navbar.css">
          <link rel="stylesheet" href="/gui/css/basic.css">
+         <link rel="stylesheet" href="/gui/css/modal.css">
      </head>
      <body>
      <div class="navbar">
@@ -13,36 +14,20 @@
          <a href="/logout" style="float:right">Logout</a>
      </div>
      <center style="margin-bottom: 100px">
-
-         <div id="stockpile" class="row-canvas">
-            <div class="section-profile">
-                    <div class="row">
-                        <div class="column section-border" style="flex:37%;text-align:left;padding:15px;">
-                            <h1 style="font-size:70px;margin-top:-20px;">Compass</h1>
-                            <h2 style="margin-top:-55px">find your way</h2>
-                            <br><br>
-                            <div id="layerSelectionAdversary">
-                                <select id="layer-selection-adversary" style="margin-top:-15px">
-                                  <option value="" selected>Select an Adversary (All)</option>
-                                    {% for adv in adversaries %}
-                                        <option value="{{ adv.adversary_id }}">{{ adv.name }}</option>
-                                    {% endfor %}}
-                                </select>
-                            </div>
-                            <button id="generateLayer" type="button" class="button-success"
-                                    style="" onclick="generateLayer()">Generate Layer</button>
-                            <input id='adversaryLayerInput' type='file' hidden/>
-                            <button id="generateAdversary" type="button" class="button-success"
-                                    style="" onclick="uploadAdversaryLayerButtonFileUpload()">Upload Adversary
-                                Layer</button>
+         <div id="duk-modal-compass" class="modal">
+            <form class="modal-content">
+                <div class="container">
+                    <div class="row duk-modal">
+                        <span onclick="document.getElementById('duk-modal-compass').style.display='none'" class="close"
+                              title="Close Modal">&times;</span>
+                        <div class="column" style="flex:8%">
+                            <img src="/gui/img/duk.png"/>
                         </div>
-                        <div class="column" style="flex:67%;padding:15px;text-align: left">
-                            <div style="background-color: var(--primary-background);padding: 15px;border-radius: 25px">
-                                <h4>
-                                Create visualizations to explore TTPs. Follow the steps below to create your own
-                                    visualization:
-                                </h4>
-                                <ol>
+                        <div class="column" style="flex:92%">
+                            <p id="duk-text" style="color: white"></p>
+                                <div style="background-color: var(--primary-background);padding: 15px;border-radius: 25px">
+                                <h4>Layer Generation</h4>
+                                <ol style="text-align: left">
                                     <li>Click 'Generate Layer'</li>
                                     <li>Click '+' to open a new tab in the navigator</li>
                                     <li>Select 'Open Existing Layer'</li>
@@ -51,11 +36,8 @@
                             </div>
                             <br>
                             <div style="background-color: var(--primary-background);padding: 15px;border-radius: 25px">
-                                <h4>
-                                Create an Adversary to use in an operation. Follow the steps below to create your own
-                                    Adversary:
-                                </h4>
-                                <ol>
+                                <h4>Adversary Creation</h4>
+                                <ol style="text-align: left">
                                     <li>Select Techniques: Right Click and 'add to selection' </li>
                                     <li>Once all techniques are selected, change the score (bar chart under 'technique
                                         controls' to a positive number</li>
@@ -67,6 +49,40 @@
                             </div>
                         </div>
                     </div>
+                </div>
+             </form>
+          </div>
+         <div id="stockpile" class="row-canvas">
+            <div class="section-profile">
+                    <div class="row">
+                        <div class="topright duk-icon"><img onclick="openHelp()" src="/gui/img/duk.png"></div>
+                        <div class="column section-border" style="flex:37%;text-align:left;padding:15px;">
+                            <h1 style="font-size:70px;margin-top:-20px;">Compass</h1>
+                            <h2 style="margin-top:-50px">find your way</h2>
+                        </div>
+                        <div class="column section-border" style="flex:37%;text-align:left;padding:15px;">
+                            <h2>Generate Layer</h2>
+                            <div id="layerSelectionAdversary">
+                                <select id="layer-selection-adversary" style="margin:0 0 0 0">
+                                  <option value="" selected>Select an Adversary (All)</option>
+                                    {% for adv in adversaries %}
+                                        <option value="{{ adv.adversary_id }}">{{ adv.name }}</option>
+                                    {% endfor %}}
+                                </select>
+                            </div>
+                            <button id="generateLayer" type="button" class="button-success"
+                                    style="" onclick="generateLayer()">Generate Layer</button>
+                        </div>
+                        <div class="column" style="flex:37%;text-align:left;padding:15px;">
+                            <h2>Generate Adversary</h2>
+                            <button id="generateAdversary" type="button" class="button-success"
+                                    style="margin-top:-3px" onclick="uploadAdversaryLayerButtonFileUpload()">Upload
+                                Adversary
+                                Layer</button>
+                            <input id='adversaryLayerInput' type='file' hidden/>
+                        </div>
+                    </div>
+
                 <div class="row" style="background-color: inherit;">
                     <object type="text/html"
                             data="https://mitre-attack.github.io/attack-navigator/enterprise/" style="display:flex;width:100%;border-radius:25px;background-color: white;overflow:auto;height:1500px;border:5px solid black">
