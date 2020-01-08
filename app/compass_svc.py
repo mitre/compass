@@ -95,8 +95,9 @@ class CompassService:
                 phases.append(dict(id=ab.ability_id, phase='1'))
         return phases
 
-    async def read_layer(self, request):
-        chunks = []
+    @staticmethod
+    async def read_layer(request):
+        body = bytes()
         reader = await request.multipart()
         while True:
             field = await reader.next()
@@ -106,10 +107,8 @@ class CompassService:
                 chunk = await field.read_chunk()
                 if not chunk:
                     break
-                chunks.append(chunk)
-        body = b''.join(chunks)
-        request_body = json.loads(body)
-        return request_body
+                body += chunk
+        return json.loads(body)
 
     @check_authorization
     async def create_adversary_from_layer(self, request):
