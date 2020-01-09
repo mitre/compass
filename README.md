@@ -1,3 +1,3 @@
 # Compass
 
-A plugin supplying CALDERA with visualizations
+Plugin supplying CALDERA with visualizations
