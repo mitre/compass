@@ -92,7 +92,9 @@ class CompassService:
         for technique_id in adversary_techniques:
             abilities = await self.data_svc.locate('abilities', match=dict(technique_id=technique_id))
             for ab in abilities:
-                phases.append(dict(id=ab.ability_id, phase='1'))
+                ability = dict(id=ab.ability_id, phase='1')
+                if ability not in phases:
+                    phases.append(ability)
         return phases
 
     @staticmethod
