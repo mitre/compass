@@ -14,3 +14,34 @@ function generateLayer() {
     let postData = selectionAdversaryID ? {'index':'adversary', 'adversary_id': selectionAdversaryID} : {'index': 'all'};
     restRequest('POST', postData, downloadObjectAsJson, '/plugin/compass/layer');
 }
+
+function uploadAdversaryLayerButtonFileUpload() {
+    document.getElementById('adversaryLayerInput').click();
+}
+$('#adversaryLayerInput').on('change', function (event){
+    if(event.currentTarget) {
+        let filename = event.currentTarget.files[0].name;
+        if(filename){
+            uploadAdversaryLayer();
+        }
+    }
+});
+
+function uploadAdversaryLayer() {
+    let file = document.getElementById('adversaryLayerInput').files[0];
+    let fd = new FormData();
+    fd.append('file', file);
+    $.ajax({
+         type: 'POST',
+         url: '/plugin/compass/adversary',
+         data: fd,
+         processData: false,
+         contentType: false
+    }).done(function (){
+        alert('New Adversary Created.');
+    })
+}
+
+function openHelp() {
+    document.getElementById("duk-modal-compass").style.display="block";
+}
