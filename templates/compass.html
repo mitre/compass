@@ -2,6 +2,7 @@
      <head>
          <title>Compass | View</title>
          <link rel="shortcut icon" type="image/png" href="/gui/img/favicon.png"/>
+         <link rel="stylesheet" href="/gui/jquery/jquery.dataTables.min.css">
          <link rel="stylesheet" href="/gui/css/shared.css">
          <link rel="stylesheet" href="/gui/css/navbar.css">
          <link rel="stylesheet" href="/gui/css/basic.css">
@@ -48,6 +49,45 @@
                 </div>
              </form>
           </div>
+         <div id="create-adversary-modal-compass" class="modal">
+            <div class="modal-content">
+                <div class="container">
+                    <div class="row duk-modal">
+                        <span onclick="document.getElementById('create-adversary-modal-compass').style.display='none'" class="close"
+                              title="Close Modal">&times;</span>
+                        <div class="column" style="flex:92%">
+                            <p style="color: white"></p>
+                                <div style="background-color: var(--primary-background);padding: 15px;border-radius: 25px">
+                                <h3>Adversary Created</h3>
+                                <h2 id="advesary-create-name"></h2>
+                                <div id="adversary-create-response"></div>
+                                    <br>
+                                <div id="missing-abilities" style="align-content:center; display: none;">
+                                    <h2 >Missing Abilities</h2>
+                                    <table class="display dataTable no-footer compact" id="missing-abilities-table"
+                                           align="center" style="width:75%">
+                                        <thead>
+                                        <tr>
+                                            <th id="missing-abilities-tactic">Tactic</th>
+                                            <th id="missing-abilities-technique">Technique ID</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="missing-abilities-body">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <br>
+                            </div>
+                            <p style="text-align: center;">An adversary is only as good as its abilities. APT layers will
+                                cover the same tactics and techniques. Procedures that accurately represent an APT only
+                                come from proper curation of an adversary.</p>
+                            <button style="width: 50%"
+                                onclick="document.getElementById('create-adversary-modal-compass').style.display='none'">Close</button>
+                        </div>
+                    </div>
+                </div>
+             </div>
+         </div>
          <div id="stockpile" class="row-canvas">
             <div class="section-profile">
                     <div class="row">
@@ -92,6 +132,8 @@
      </center>
      </body>
     <script src="/gui/jquery/jquery.js"></script>
+    <script src="/gui/jquery/jquery.dataTables.min.js"></script>
+    <script src="/gui/jquery/jquery.dataTables.select.min.js"></script>
     <script src="/gui/js/shared.js"></script>
     <script src="/compass/js/compass.js"></script>
  </html>
