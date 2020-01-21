@@ -68,6 +68,7 @@ class CompassService:
         for ability in abilities:
             technique = dict(
                 techniqueID=ability.technique_id,
+                tactic=ability.tactic,
                 score=1,
                 color='',
                 comment='',
@@ -83,19 +84,22 @@ class CompassService:
         adversary_techniques = set()
         for technique in techniques:
             if technique.get('score') > 0:
-                technique_id = technique.get('techniqueID')
-                adversary_techniques.add(technique_id)
+                adversary_techniques.add((technique.get('techniqueID'), technique.get('tactic')))
         return adversary_techniques
 
     async def build_phases(self, adversary_techniques):
         phases = []
-        for technique_id in adversary_techniques:
-            abilities = await self.data_svc.locate('abilities', match=dict(technique_id=technique_id))
+        unmatched_techniques = []
+        for technique_id, tactic in adversary_techniques:
+            abilities = await self.data_svc.locate('abilities', match=dict(technique_id=technique_id,
+                                                                           tactic=tactic))
+            if not abilities:
+                unmatched_techniques.append(dict(technique_id=technique_id, tactic=tactic))
             for ab in abilities:
                 ability = dict(id=ab.ability_id, phase='1')
                 if ability not in phases:
                     phases.append(ability)
-        return phases
+        return phases, unmatched_techniques
 
     @staticmethod
     async def read_layer(request):
@@ -124,15 +128,14 @@ class CompassService:
             request_body = await self.read_layer(request)
         except json.decoder.JSONDecodeError:
             return web.HTTPBadRequest()
-
         adversary_data = dict(i=str(uuid.uuid4()),
                               name=request_body.get('name'),
                               description=request_body.get('description'))
-
         adversary_techniques = self.extract_techniques(request_body)
-        adversary_data['phases'] = await self.build_phases(adversary_techniques)
+        adversary_data['phases'], unmatched_techniques = await self.build_phases(adversary_techniques)
         adversary = await self.rest_svc.persist_adversary(adversary_data)
-
         if adversary:
-            return web.json_response('adversary created')
+            return web.json_response(dict(unmatched_techniques=sorted(unmatched_techniques, key=lambda x: x['tactic']),
+                                          name=request_body.get('name'),
+                                          description=request_body.get('description')))
         raise web.HTTPBadRequest()

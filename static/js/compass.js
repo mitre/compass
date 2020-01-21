@@ -37,8 +37,33 @@ function uploadAdversaryLayer() {
          data: fd,
          processData: false,
          contentType: false
-    }).done(function (){
-        alert('New Adversary Created.');
+    }).done(function (data){
+        $('#advesary-create-name').html(data['name']);
+        $('#adversary-create-response').html(data['description']);
+
+        let unmatched_techniques = data['unmatched_techniques'];
+        if (unmatched_techniques.length){
+            document.getElementById('missing-abilities').style.display='block';
+        } else {
+            document.getElementById('missing-abilities').style.display='none';
+        }
+        $('#missing-abilities-body').children().remove();
+        unmatched_techniques.forEach(element => {
+           let row = document.getElementById('missing-abilities-body').insertRow();
+           ['tactic', 'technique_id'].forEach( cell_name => {
+               let cell = row.insertCell();
+               cell.innerHTML = element[cell_name];
+           });
+        });
+        $('#missing-abilities-table').DataTable({
+            retrieve:  true,
+            paging:    false,
+            info:      false,
+            searching: false,
+        });
+
+
+        document.getElementById('create-adversary-modal-compass').style.display='block';
     })
 }
 
