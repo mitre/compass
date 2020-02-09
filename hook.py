@@ -3,6 +3,7 @@ from plugins.compass.app.compass_svc import CompassService
 name = 'Compass'
 description = 'Use the compass to Navigate CALDERA'
 address = '/plugin/compass/gui'
+authentication = 'red'
 
 
 async def enable(services):
