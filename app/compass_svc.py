@@ -130,7 +130,7 @@ class CompassService:
             return web.HTTPBadRequest()
         adversary_data = dict(i=str(uuid.uuid4()),
                               name=request_body.get('name'),
-                              description=request_body.get('description'))
+                              description=request_body.get('description', '') + ' (created by compass)')
         adversary_techniques = self.extract_techniques(request_body)
         adversary_data['phases'], unmatched_techniques = await self.build_phases(adversary_techniques)
         adversary = await self.rest_svc.persist_adversary(adversary_data)
