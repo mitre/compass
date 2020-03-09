@@ -18,6 +18,7 @@ function generateLayer() {
 function uploadAdversaryLayerButtonFileUpload() {
     document.getElementById('adversaryLayerInput').click();
 }
+
 $('#adversaryLayerInput').on('change', function (event){
     if(event.currentTarget) {
         let filename = event.currentTarget.files[0].name;
@@ -55,13 +56,6 @@ function uploadAdversaryLayer() {
                cell.innerHTML = element[cell_name];
            });
         });
-        $('#missing-abilities-table').DataTable({
-            retrieve:  true,
-            paging:    false,
-            info:      false,
-            searching: false,
-        });
-
 
         document.getElementById('create-adversary-modal-compass').style.display='block';
     })
