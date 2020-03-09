@@ -29,6 +29,7 @@
                 Adversary
                 Layer</button>
             <input id='adversaryLayerInput' type='file' hidden/>
+            <div id='adversaryLayerFile' style="display: block;"></div>
         </div>
     </div>
     <div class="row" style="background-color: inherit;">
@@ -93,7 +94,7 @@
                     <div id="missing-abilities" style="align-content:center; display: none;">
                         <h2 >Missing Abilities</h2>
                         <table class="display dataTable no-footer compact" id="missing-abilities-table"
-                               align="center" style="width:75%">
+                               align="center" style="width:75%; color: white; text-align: left;">
                             <thead>
                             <tr>
                                 <th id="missing-abilities-tactic">Tactic</th>
@@ -109,7 +110,7 @@
                 <p style="text-align: center;">An adversary is only as good as its abilities. APT layers will
                     cover the same tactics and techniques. Procedures that accurately represent an APT only
                     come from proper curation of an adversary.</p>
-                <button style="width: 50%"
+                <button class="button-success atomic-button" style="width: 50%"
                     onclick="document.getElementById('create-adversary-modal-compass').style.display='none'">Close</button>
             </div>
         </div>
