@@ -47,12 +47,8 @@ class CompassService:
         return 'All-Abilities', 'full set of techniques available', await self.services.get('data_svc').locate('abilities')
 
     async def _get_adversary_abilities(self, request_body):
-        abilities = []
         adversary = (await self.data_svc.locate('adversaries', match=dict(adversary_id=request_body.get('adversary_id'))))[0]
-        for _, v in adversary.phases.items():
-            for a in v:
-                abilities.append(a)
-        return adversary.name, adversary.description, abilities
+        return adversary.name, adversary.description, adversary.atomic_ordering
 
     @check_authorization
     async def generate_layer(self, request):
@@ -87,8 +83,8 @@ class CompassService:
                 adversary_techniques.add((technique.get('techniqueID'), technique.get('tactic')))
         return adversary_techniques
 
-    async def build_phases(self, adversary_techniques):
-        phases = []
+    async def build_adversary(self, adversary_techniques):
+        atomic_order = []
         unmatched_techniques = []
         for technique_id, tactic in adversary_techniques:
             abilities = await self.data_svc.locate('abilities', match=dict(technique_id=technique_id,
@@ -96,10 +92,10 @@ class CompassService:
             if not abilities:
                 unmatched_techniques.append(dict(technique_id=technique_id, tactic=tactic))
             for ab in abilities:
-                ability = dict(id=ab.ability_id, phase='1')
-                if ability not in phases:
-                    phases.append(ability)
-        return phases, unmatched_techniques
+                ability = dict(id=ab.ability_id)
+                if ability not in atomic_order:
+                    atomic_order.append(ability)
+        return atomic_order, unmatched_techniques
 
     @staticmethod
     async def read_layer(request):
@@ -120,7 +116,7 @@ class CompassService:
     async def create_adversary_from_layer(self, request):
         """
         Takes a layer file and generates an adversary that matches the selected tactics and techniques.
-        Adversary will be divided into phases by tactic
+        Adversary will be constructed into a single atomic list of techniques
         :param request:
         :return:
         """
@@ -128,14 +124,17 @@ class CompassService:
             request_body = await self.read_layer(request)
         except json.decoder.JSONDecodeError:
             return web.HTTPBadRequest()
-        adversary_data = dict(i=str(uuid.uuid4()),
-                              name=request_body.get('name'),
-                              description=request_body.get('description', '') + ' (created by compass)')
-        adversary_techniques = self.extract_techniques(request_body)
-        adversary_data['phases'], unmatched_techniques = await self.build_phases(adversary_techniques)
-        adversary = await self.rest_svc.persist_adversary(adversary_data)
-        if adversary:
-            return web.json_response(dict(unmatched_techniques=sorted(unmatched_techniques, key=lambda x: x['tactic']),
-                                          name=request_body.get('name'),
-                                          description=request_body.get('description')))
-        raise web.HTTPBadRequest()
+        try:
+            adversary_data = dict(i=str(uuid.uuid4()),
+                                  name=request_body.get('name'),
+                                  description=request_body.get('description', '') + ' (created by compass)')
+            adversary_techniques = self.extract_techniques(request_body)
+            adversary_data['atomic_ordering'], unmatched_techniques = await self.build_adversary(adversary_techniques)
+            adversary = await self.rest_svc.persist_adversary(adversary_data)
+            if adversary:
+                return web.json_response(dict(unmatched_techniques=sorted(unmatched_techniques, key=lambda x: x['tactic']),
+                                              name=request_body.get('name'),
+                                              description=request_body.get('description')))
+        except Exception as e:
+            print(e)
+            raise web.HTTPBadRequest()
