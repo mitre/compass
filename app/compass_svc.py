@@ -4,9 +4,10 @@ import uuid
 from aiohttp import web
 from aiohttp_jinja2 import template
 
-from app.service.auth_svc import check_authorization
+from app.service.auth_svc import for_all_public_methods, check_authorization
 
 
+@for_all_public_methods(check_authorization)
 class CompassService:
 
     def __init__(self, services):
@@ -15,7 +16,6 @@ class CompassService:
         self.data_svc = self.services.get('data_svc')
         self.rest_svc = self.services.get('rest_svc')
 
-    @check_authorization
     @template('compass.html')
     async def splash(self, request):
         adversaries = [a.display for a in await self.data_svc.locate('adversaries')]
@@ -50,7 +50,6 @@ class CompassService:
         adversary = (await self.data_svc.locate('adversaries', match=dict(adversary_id=request_body.get('adversary_id'))))[0]
         return adversary.name, adversary.description, adversary.atomic_ordering
 
-    @check_authorization
     async def generate_layer(self, request):
         request_body = json.loads(await request.read())
 
@@ -74,7 +73,6 @@ class CompassService:
 
         return web.json_response(layer)
 
-    @staticmethod
     def extract_techniques(request_body):
         techniques = request_body.get('techniques')
         adversary_techniques = set()
@@ -83,7 +81,7 @@ class CompassService:
                 adversary_techniques.add((technique.get('techniqueID'), technique.get('tactic')))
         return adversary_techniques
 
-    async def build_adversary(self, adversary_techniques):
+    async def _build_adversary(self, adversary_techniques):
         atomic_order = []
         unmatched_techniques = []
         for technique_id, tactic in adversary_techniques:
@@ -97,7 +95,6 @@ class CompassService:
                     atomic_order.append(ability)
         return atomic_order, unmatched_techniques
 
-    @staticmethod
     async def read_layer(request):
         body = bytes()
         reader = await request.multipart()
@@ -112,7 +109,6 @@ class CompassService:
                 body += chunk
         return json.loads(body)
 
-    @check_authorization
     async def create_adversary_from_layer(self, request):
         """
         Takes a layer file and generates an adversary that matches the selected tactics and techniques.
@@ -129,7 +125,7 @@ class CompassService:
                                   name=request_body.get('name'),
                                   description=request_body.get('description', '') + ' (created by compass)')
             adversary_techniques = self.extract_techniques(request_body)
-            adversary_data['atomic_ordering'], unmatched_techniques = await self.build_adversary(adversary_techniques)
+            adversary_data['atomic_ordering'], unmatched_techniques = await self._build_adversary(adversary_techniques)
             adversary = await self.rest_svc.persist_adversary(adversary_data)
             if adversary:
                 return web.json_response(dict(unmatched_techniques=sorted(unmatched_techniques, key=lambda x: x['tactic']),
