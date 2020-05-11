@@ -47,8 +47,8 @@ class CompassService:
         return 'All-Abilities', 'full set of techniques available', await self.services.get('data_svc').locate('abilities')
 
     async def _get_adversary_abilities(self, request_body):
-        adversary = (await self.data_svc.locate('adversaries', match=dict(adversary_id=request_body.get('adversary_id'))))[0]
-        return adversary.name, adversary.description, adversary.atomic_ordering
+        adversary = (await self.rest_svc.display_objects(object_name='adversaries', data=dict(adversary_id=request_body.get('adversary_id'))))[0]
+        return adversary['name'], adversary['description'], adversary['atomic_ordering']
 
     async def generate_layer(self, request):
         request_body = json.loads(await request.read())
@@ -62,8 +62,8 @@ class CompassService:
         layer = self._get_layer_boilerplate(name=display_name, description=description)
         for ability in abilities:
             technique = dict(
-                techniqueID=ability.technique_id,
-                tactic=ability.tactic,
+                techniqueID=ability['technique_id'],
+                tactic=ability['tactic'],
                 score=1,
                 color='',
                 comment='',
@@ -73,7 +73,8 @@ class CompassService:
 
         return web.json_response(layer)
 
-    def extract_techniques(request_body):
+    @staticmethod
+    def _extract_techniques(request_body):
         techniques = request_body.get('techniques')
         adversary_techniques = set()
         for technique in techniques:
@@ -95,7 +96,8 @@ class CompassService:
                     atomic_order.append(ability)
         return atomic_order, unmatched_techniques
 
-    async def read_layer(request):
+    @staticmethod
+    async def _read_layer(request):
         body = bytes()
         reader = await request.multipart()
         while True:
@@ -117,14 +119,14 @@ class CompassService:
         :return:
         """
         try:
-            request_body = await self.read_layer(request)
+            request_body = await self._read_layer(request)
         except json.decoder.JSONDecodeError:
             return web.HTTPBadRequest()
         try:
             adversary_data = dict(i=str(uuid.uuid4()),
                                   name=request_body.get('name'),
                                   description=request_body.get('description', '') + ' (created by compass)')
-            adversary_techniques = self.extract_techniques(request_body)
+            adversary_techniques = self._extract_techniques(request_body)
             adversary_data['atomic_ordering'], unmatched_techniques = await self._build_adversary(adversary_techniques)
             adversary = await self.rest_svc.persist_adversary(adversary_data)
             if adversary:
