@@ -1,10 +1,8 @@
-from app.utility.base_world import BaseWorld
 from plugins.compass.app.compass_svc import CompassService
 
 name = 'Compass'
 description = 'Use the compass to Navigate CALDERA'
 address = '/plugin/compass/gui'
-access = BaseWorld.Access.RED
 
 
 async def enable(services):
