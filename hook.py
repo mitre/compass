@@ -1,4 +1,3 @@
-from app.utility.base_world import BaseWorld
 from plugins.compass.app.compass_svc import CompassService
 
 name = 'Compass'
