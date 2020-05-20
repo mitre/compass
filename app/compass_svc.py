@@ -44,7 +44,7 @@ class CompassService:
         )
 
     async def _get_all_abilities(self):
-        return 'All-Abilities', 'full set of techniques available', await self.services.get('data_svc').locate('abilities')
+        return 'All-Abilities', 'full set of techniques available', [ability.display for ability in await self.services.get('data_svc').locate('abilities')]
 
     async def _get_adversary_abilities(self, request_body):
         adversary = (await self.rest_svc.display_objects(object_name='adversaries', data=dict(adversary_id=request_body.get('adversary_id'))))[0]
