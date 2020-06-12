@@ -128,7 +128,7 @@ class CompassService:
                                   description=request_body.get('description', '') + ' (created by compass)')
             adversary_techniques = self._extract_techniques(request_body)
             adversary_data['atomic_ordering'], unmatched_techniques = await self._build_adversary(adversary_techniques)
-            adversary = await self.rest_svc.persist_adversary(adversary_data)
+            adversary = await self.rest_svc.persist_adversary(dict(access=[self.rest_svc.Access.RED]), adversary_data)
             if adversary:
                 return web.json_response(dict(unmatched_techniques=sorted(unmatched_techniques, key=lambda x: x['tactic']),
                                               name=request_body.get('name'),
