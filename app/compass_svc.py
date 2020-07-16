@@ -24,7 +24,7 @@ class CompassService:
     @staticmethod
     def _get_layer_boilerplate(name, description):
         return dict(
-            version='2.2',
+            version='3.0',
             name=name,
             description=description,
             domain='mitre-enterprise',
@@ -33,6 +33,7 @@ class CompassService:
             showTacticRowBackground=True,
             tacticRowBackground='#205b8f',
             selectTechniquesAcrossTactics=True,
+            selectSubtechniquesWithParent=True,
             gradient=dict(
                 colors=[
                     '#ffffff',
@@ -67,7 +68,8 @@ class CompassService:
                 score=1,
                 color='',
                 comment='',
-                enabled=True
+                enabled=True,
+                showSubtechniques=False
             )
             layer['techniques'].append(technique)
 
