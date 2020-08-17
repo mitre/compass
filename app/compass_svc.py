@@ -125,7 +125,7 @@ class CompassService:
         except json.decoder.JSONDecodeError:
             return web.HTTPBadRequest()
         try:
-            adversary_data = dict(i=str(uuid.uuid4()),
+            adversary_data = dict(id=str(uuid.uuid4()),
                                   name=request_body.get('name'),
                                   description=request_body.get('description', '') + ' (created by compass)')
             adversary_techniques = self._extract_techniques(request_body)
