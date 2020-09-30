@@ -80,7 +80,7 @@ class CompassService:
         techniques = request_body.get('techniques')
         adversary_techniques = set()
         for technique in techniques:
-            if technique.get('score') > 0:
+            if technique.get('score', 0) > 0:
                 adversary_techniques.add((technique.get('techniqueID'), technique.get('tactic')))
         return adversary_techniques
 
