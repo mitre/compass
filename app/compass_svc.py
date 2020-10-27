@@ -88,8 +88,12 @@ class CompassService:
         atomic_order = []
         unmatched_techniques = []
         for technique_id, tactic in adversary_techniques:
-            abilities = await self.data_svc.locate('abilities', match=dict(technique_id=technique_id,
-                                                                           tactic=tactic))
+            if tactic:
+                abilities = await self.data_svc.locate('abilities', match=dict(technique_id=technique_id,
+                                                                               tactic=tactic))
+            else:
+                abilities = await self.data_svc.locate('abilities', match=dict(technique_id=technique_id))
+
             if not abilities:
                 unmatched_techniques.append(dict(technique_id=technique_id, tactic=tactic))
             for ab in abilities:
