@@ -7,6 +7,13 @@ from collections import defaultdict
 
 from app.service.auth_svc import for_all_public_methods, check_authorization
 
+_technique_colors = dict(
+    success='#44AA99',  # Green
+    partial_success='#FFB000',  # Orange
+    failure='#CC3311',  # Red
+    not_run='#555555',  # Dark grey
+)
+
 
 @for_all_public_methods(check_authorization)
 class CompassService:
@@ -64,10 +71,10 @@ class CompassService:
             techniques=[],
             gradient=dict(
                 colors=[
-                    "#bdbdbd",
-                    "#fc3b3b",
-                    "#fd8d3c",
-                    "#31a354"
+                    _technique_colors['not_run'],
+                    _technique_colors['failure'],
+                    _technique_colors['partial_success'],
+                    _technique_colors['success'],
                 ],
                 minValue=0,
                 maxValue=3
@@ -75,19 +82,19 @@ class CompassService:
             legendItems=[
                 {
                     "label": "All ran procedures succeeded",
-                    "color": "#31a354"
+                    "color": _technique_colors['success']
                 },
                 {
                     "label": "None of the ran procedures succeeded",
-                    "color": "#fc3b3b"
+                    "color": _technique_colors['failure']
                 },
                 {
                     "label": "Some of the ran procedures succeeded.",
-                    "color": "#fd8d3c"
+                    "color": _technique_colors['partial_success']
                 },
                 {
                     "label": "None of the procedures ran.",
-                    "color": "#bdbdbd"
+                    "color": _technique_colors['not_run']
                 }
             ],
             metadata=[],
@@ -165,25 +172,21 @@ class CompassService:
 
             # Default case: none of the procedures for this technique were run.
             score = 0
-            color = '#bdbdbd'
             if skipped_counter[technique_id] < num_procedures:
                 if success_counter[technique_id] == 0:
                     # None of the procedures that ran for this technique succeeded
                     score = 1
-                    color = '#fc3b3b'
                 elif no_success_counter[technique_id] == 0:
                     # All of the procedures that ran for this technique succeeded.
                     score = 3
-                    color = '#31a354'
                 else:
                     # Some of the procedures that ran failed
                     score = 2
-                    color = '#fd8d3c'
             technique_dicts[technique_id] = dict(
                 techniqueID=technique_id,
                 tactic=technique_tactic_map[technique_id],
                 score=score,
-                color=color,
+                color='',
                 comment='',
                 enabled=True,
                 metadata=[],
