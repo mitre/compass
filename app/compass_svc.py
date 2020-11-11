@@ -4,15 +4,16 @@ import uuid
 from aiohttp import web
 from aiohttp_jinja2 import template
 from collections import defaultdict
+from enum import Enum
 
 from app.service.auth_svc import for_all_public_methods, check_authorization
 
-_technique_colors = dict(
-    success='#44AA99',  # Green
-    partial_success='#FFB000',  # Orange
-    failure='#CC3311',  # Red
-    not_run='#555555',  # Dark grey
-)
+
+class _HeatmapColors(Enum):
+    SUCCESS = '#44AA99'  # Green
+    PARTIAL_SUCCESS = '#FFB000'  # Orange
+    FAILURE = '#CC3311'  # Red
+    NOT_RUN = '#555555'  # Dark grey
 
 
 @for_all_public_methods(check_authorization)
@@ -66,15 +67,29 @@ class CompassService:
             ),
             domain="enterprise-attack",
             description=description,
+            filters={
+               "platforms": [
+                   "Linux",
+                   "macOS",
+                   "Windows",
+                   "Office 365",
+                   "Azure AD",
+                   "AWS",
+                   "GCP",
+                   "Azure",
+                   "SaaS",
+                   "Network"
+               ]
+            },
             sorting=0,
             hideDisabled=False,
             techniques=[],
             gradient=dict(
                 colors=[
-                    _technique_colors['not_run'],
-                    _technique_colors['failure'],
-                    _technique_colors['partial_success'],
-                    _technique_colors['success'],
+                    _HeatmapColors.NOT_RUN.value,
+                    _HeatmapColors.FAILURE.value,
+                    _HeatmapColors.PARTIAL_SUCCESS.value,
+                    _HeatmapColors.SUCCESS.value,
                 ],
                 minValue=0,
                 maxValue=3
@@ -82,19 +97,19 @@ class CompassService:
             legendItems=[
                 {
                     "label": "All ran procedures succeeded",
-                    "color": _technique_colors['success']
+                    "color": _HeatmapColors.SUCCESS.value
                 },
                 {
                     "label": "None of the ran procedures succeeded",
-                    "color": _technique_colors['failure']
+                    "color": _HeatmapColors.FAILURE.value
                 },
                 {
-                    "label": "Some of the ran procedures succeeded.",
-                    "color": _technique_colors['partial_success']
+                    "label": "Some of the ran procedures succeeded",
+                    "color": _HeatmapColors.PARTIAL_SUCCESS.value
                 },
                 {
-                    "label": "None of the procedures ran.",
-                    "color": _technique_colors['not_run']
+                    "label": "All procedures skipped",
+                    "color": _HeatmapColors.NOT_RUN.value
                 }
             ],
             metadata=[],
@@ -149,19 +164,39 @@ class CompassService:
         no_success_counter = defaultdict(int)
         skipped_counter = defaultdict(int)
         technique_tactic_map = dict()
-        technique_dicts = dict() # Map technique ID to corresponding dict object.
+        technique_dicts = dict()  # Map technique ID to corresponding dict object.
+        to_process = []  # list of (ability, status) tuples
+
+        # Get links from operation chain
         for link in operation.chain:
-            technique_id = link.ability.technique_id
+            to_process.append((link.ability, link.status))
+
+        # Get automatically skipped links
+        skipped_abilities = await operation.get_skipped_abilities_by_agent(self.data_svc)
+        for skipped_by_agent in skipped_abilities:
+            for _, skipped in skipped_by_agent.items():
+                for skipped_info in skipped:
+                    status = skipped_info.get('reason_id')
+                    ability_id = skipped_info.get('ability_id')
+                    if status is not None:
+                        ability = (await self.data_svc.locate('abilities', match=dict(ability_id=ability_id)))[0]
+                        if ability:
+                            to_process.append((ability, status))
+
+        # Count success, failures, no-runs for links.
+        for (ability, status) in to_process:
+            technique_id = ability.technique_id
             technique_counter[technique_id] += 1
-            technique_tactic_map[technique_id] = link.ability.tactic
-            if link.status == 0:
+            technique_tactic_map[technique_id] = ability.tactic
+            if status == 0:
                 success_counter[technique_id] += 1
-            elif link.status in (1, 124, -3, -4, -5):
-                # Did not succeed if status was failure,
-                # timeout, collected, untrusted, or visibility.
+            elif status in (1, 124, -3, -4):
+                # Did not succeed if status was failure, timeout, untrusted, or collected (in the
+                # case of collected/untrusted/timeout, the command may have run successfully, but
+                # we don't know for sure due to lack of timely response from the agent).
                 no_success_counter[technique_id] += 1
             else:
-                # Ability either queued or discarded.
+                # Ability either queued, manually discarded, or visibility threshold was surpassed.
                 skipped_counter[technique_id] += 1
 
         for technique_id, num_procedures in technique_counter.items():
