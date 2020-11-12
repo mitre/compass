@@ -176,9 +176,10 @@ class CompassService:
         for skipped_by_agent in skipped_abilities:
             for _, skipped in skipped_by_agent.items():
                 for skipped_info in skipped:
-                    status = skipped_info.get('reason_id')
+                    skipped_reason = skipped_info.get('reason_id')
                     ability_id = skipped_info.get('ability_id')
-                    if status is not None:
+                    if skipped_reason is not None:
+                        status = 10 + int(skipped_reason)  # skipped_reason can be in range [0, 5]
                         ability = (await self.data_svc.locate('abilities', match=dict(ability_id=ability_id)))[0]
                         if ability:
                             to_process.append((ability, status))
@@ -196,7 +197,7 @@ class CompassService:
                 # we don't know for sure due to lack of timely response from the agent).
                 no_success_counter[technique_id] += 1
             else:
-                # Ability either queued, manually discarded, or visibility threshold was surpassed.
+                # Ability either queued, skipped, manually discarded, or visibility threshold was surpassed.
                 skipped_counter[technique_id] += 1
 
         for technique_id, num_procedures in technique_counter.items():
