@@ -39,8 +39,8 @@ function uploadAdversaryLayer() {
          processData: false,
          contentType: false
     }).done(function (data){
-        $('#advesary-create-name').html(data['name']);
-        $('#adversary-create-response').html(data['description']);
+        $('#adversary-create-name').text(data['name']);
+        $('#adversary-create-response').text(data['description']);
 
         let unmatched_techniques = data['unmatched_techniques'];
         if (unmatched_techniques.length){
