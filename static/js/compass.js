@@ -1,4 +1,4 @@
-function generateLayer() {
+function generateAdversaryLayer() {
     function downloadObjectAsJson(data){
         let exportName = 'layer';
         let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
@@ -12,7 +12,26 @@ function generateLayer() {
 
     let selectionAdversaryID = $('#layer-selection-adversary option:selected').attr('value');
     let postData = selectionAdversaryID ? {'index':'adversary', 'adversary_id': selectionAdversaryID} : {'index': 'all'};
-    restRequest('POST', postData, downloadObjectAsJson, '/plugin/compass/layer');
+    restRequest('POST', postData, downloadObjectAsJson, '/plugin/compass/adversarylayer');
+}
+
+function generateOperationLayer() {
+    function downloadObjectAsJson(data){
+        let exportName = 'operation_layer';
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+        let downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", exportName + ".json");
+        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
+
+    let selectionOperationID = $('#layer-selection-operation option:selected').attr('value');
+    if (selectionOperationID) {
+    	let postData = {'index':'operation', 'id': selectionOperationID};
+    	restRequest('POST', postData, downloadObjectAsJson, '/plugin/compass/operationlayer');
+    }
 }
 
 function uploadAdversaryLayerButtonFileUpload() {

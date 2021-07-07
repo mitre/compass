@@ -10,7 +10,7 @@
                 upload the layer file to generate an adversary to use in an operation</p>
         </div>
         <div class="column section-border" style="flex:37%;text-align:left;padding:15px;">
-            <h2>Generate Layer</h2>
+            <h2>Generate Adversary Layer</h2>
             <div id="layerSelectionAdversary">
                 <select id="layer-selection-adversary" style="margin:0 0 0 0">
                   <option value="" selected>Select an Adversary (All)</option>
@@ -19,8 +19,21 @@
                     {% endfor %}}
                 </select>
             </div>
-            <button id="generateLayer" type="button" class="button-success"
-                    style="" onclick="generateLayer()">Generate Layer</button>
+            <button id="generateAdversaryLayer" type="button" class="button-success"
+                    style="" onclick="generateAdversaryLayer()">Generate Layer</button>
+        </div>
+        <div class="column section-border" style="flex:37%;text-align:left;padding:15px;">
+            <h2>Generate Operation Layer</h2>
+            <div id="layerSelectionOperation">
+                <select id="layer-selection-operation" style="margin:0 0 0 0">
+                  <option value="" selected>Select an Operation</option>
+                    {% for op in operations %}
+                        <option value="{{ op.id }}">{{ op.id }}-{{ op.name }}</option>
+                    {% endfor %}}
+                </select>
+            </div>
+            <button id="generateOperationLayer" type="button" class="button-success"
+                    style="" onclick="generateOperationLayer()">Generate Layer</button>
         </div>
         <div class="column" style="flex:37%;text-align:left;padding:15px;">
             <h2>Generate Adversary</h2>
