@@ -1,7 +1,7 @@
 function generateLayer() {
     function downloadObjectAsJson(data){
         let exportName = 'layer';
-        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(data);
         let downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
         downloadAnchorNode.setAttribute("download", exportName + ".json");
