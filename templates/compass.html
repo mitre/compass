@@ -14,26 +14,34 @@
                 <label for="layer-selection-adversary" class="pb-2 is-size-6">Generate Layer</label>
                 <div class="is-flex is-flex-direction-row is-align-items-center">
                     <div id="layerSelectionAdversary" class="mt-1 mr-2">
-                        <select id="layer-selection-adversary" style="margin:0 0 0 0">
+                        <select id="layer-selection-adversary">
                             <option value="" selected>Select an Adversary (All)</option>
                             {% for adv in adversaries %}
                             <option value="{{ adv.adversary_id }}">{{ adv.name }}</option>
                             {% endfor %}}
                         </select>
                     </div>
-                    <button id="generateLayer" class="button is-primary is-small"
-                            onclick="generateLayer()">
-                        Generate Layer
-                    </button>
+                    <label for="generateLayer">
+                        <button id="generateLayer" class="button is-primary is-small"
+                                onclick="generateLayer()">
+                            <span class="has-tooltip-multiline has-tooltip-bottom"
+                                  data-tooltip="Click 'Generate Layer'. Click '+' to open a new tab in the navigator. Select 'Open Existing Layer'. Select 'Upload from local' and upload the generated layer file.">Generate Layer
+                            </span>
+                        </button>
+                    </label>
                 </div>
             </div>
             <div class="is-flex is-flex-direction-column ml-6">
                 <label for="generateAdversary" class="pb-2 is-size-6">Generate Adversary</label>
                 <div class="is-flex is-flex-direction-row">
-                    <button id="generateAdversary" class="button is-primary is-small"
-                            onclick="uploadAdversaryLayerButtonFileUpload()"><i class="pr-1 fas fa-upload"></i>
-                        Create Operation
-                    </button>
+                    <label for="generateAdversary">
+                        <button id="generateAdversary" class="button is-primary is-small"
+                                onclick="uploadAdversaryLayerButtonFileUpload()"><i class="pr-1 fas fa-upload"></i>
+                            <span class="has-tooltip-multiline has-tooltip-bottom"
+                                  data-tooltip=" Select Techniques: Right Click and 'add to selection. Once all techniques are selected, change the score (bar chart under 'technique controls' to a positive number. Select 'download layer as json' under layer control. Upload Adversary Layer file. The Adversary will now be available to use in an operation. The Adversary will be take on the name of the layer tab. The adversary will be split into phases by tactic.">Create Operation
+                            </span>
+                        </button>
+                    </label>
                     <input id='adversaryLayerInput' type='file' hidden/>
                 </div>
             </div>
@@ -45,47 +53,6 @@
     </div>
 </div>
 
-
-<div id="duk-modal-compass" class="modal">
-    <form class="modal-content">
-        <div class="container">
-            <div class="row duk-modal">
-            <span onclick="document.getElementById('duk-modal-compass').style.display='none'" class="close"
-                  title="Close Modal">&times;</span>
-                <div class="column" style="flex:8%">
-                    <img src="/gui/img/duk.png"/>
-                </div>
-                <div class="column" style="flex:92%">
-                    <p id="duk-text" style="color: white"></p>
-                    <div style="background-color: var(--primary-background);padding: 15px;border-radius: 25px">
-                        <h4>Layer Generation</h4>
-                        <ol style="text-align: left">
-                            <li>Click 'Generate Layer'</li>
-                            <li>Click '+' to open a new tab in the navigator</li>
-                            <li>Select 'Open Existing Layer'</li>
-                            <li>Select 'Upload from local' and upload the generated layer file</li>
-                        </ol>
-                    </div>
-                    <br>
-                    <div style="background-color: var(--primary-background);padding: 15px;border-radius: 25px">
-                        <h4>Adversary Creation</h4>
-                        <ol style="text-align: left">
-                            <li>Select Techniques: Right Click and 'add to selection'</li>
-                            <li>Once all techniques are selected, change the score (bar chart under 'technique
-                                controls' to a positive number
-                            </li>
-                            <li>Select 'download layer as json' under layer controls</li>
-                            <li>Upload Adversary Layer file. The Adversary will now be available to use in
-                                an operation. The Adversary will be take on the name of the layer tab. The
-                                adversary will be split into phases by tactic
-                            </li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-</div>
 <div id="create-adversary-modal-compass" class="modal">
     <div class="modal-content">
         <div class="container">
