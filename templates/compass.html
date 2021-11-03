@@ -9,11 +9,11 @@
     </div>
     <hr>
     <div>
-        <div class="is-flex is-flex-direction-row">
+        <div class="is-flex is-flex-direction-row mb-4">
             <div class="is-flex is-flex-direction-column">
                 <label for="layer-selection-adversary" class="pb-2 is-size-6">Generate Layer</label>
-                <div class="is-flex is-flex-direction-row">
-                    <div id="layerSelectionAdversary" class="mt-1">
+                <div class="is-flex is-flex-direction-row is-align-items-center">
+                    <div id="layerSelectionAdversary" class="mt-1 mr-2">
                         <select id="layer-selection-adversary" style="margin:0 0 0 0">
                             <option value="" selected>Select an Adversary (All)</option>
                             {% for adv in adversaries %}
@@ -21,18 +21,18 @@
                             {% endfor %}}
                         </select>
                     </div>
-                    <button id="generateLayer" type="button" class="button-success ml-1 mt-0"
-                            style="" onclick="generateLayer()">Generate Layer
+                    <button id="generateLayer" class="button is-primary is-small"
+                            onclick="generateLayer()">
+                        Generate Layer
                     </button>
                 </div>
             </div>
             <div class="is-flex is-flex-direction-column ml-6">
                 <label for="generateAdversary" class="pb-2 is-size-6">Generate Adversary</label>
                 <div class="is-flex is-flex-direction-row">
-                    <button id="generateAdversary" type="button" class="button-success"
-                            style="margin-top:-3px" onclick="uploadAdversaryLayerButtonFileUpload()">Upload
-                        Adversary
-                        Layer
+                    <button id="generateAdversary" class="button is-primary is-small"
+                            onclick="uploadAdversaryLayerButtonFileUpload()"><i class="pr-1 fas fa-upload"></i>
+                        Create Operation
                     </button>
                     <input id='adversaryLayerInput' type='file' hidden/>
                 </div>
@@ -115,7 +115,7 @@
                         </div>
                         <br>
                     </div>
-                    <p style="text-align: center;">An adversary is only as good as its abilities. APT layers will
+                    <p class="has-text-centered">An adversary is only as good as its abilities. APT layers will
                         cover the same tactics and techniques. Procedures that accurately represent an APT only
                         come from proper curation of an adversary.</p>
                     <button class="button-success atomic-button" style="width: 50%"
