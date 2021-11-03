@@ -14,7 +14,7 @@
                 <label for="layer-selection-adversary" class="pb-2 is-size-6">Generate Layer</label>
                 <div class="is-flex is-flex-direction-row is-align-items-center">
                     <div id="layerSelectionAdversary" class="mt-1 mr-2">
-                        <select id="layer-selection-adversary">
+                        <select id="layer-selection-adversary" x-model="selectedAdversaryID">
                             <option value="" selected>Select an Adversary (All)</option>
                             {% for adv in adversaries %}
                             <option value="{{ adv.adversary_id }}">{{ adv.name }}</option>
@@ -23,7 +23,7 @@
                     </div>
                     <label for="generateLayer">
                         <button id="generateLayer" class="button is-primary is-small"
-                                onclick="generateLayer()"><i class="pr-1 fas fa-download"></i>
+                                x-on:click="generateLayer()"><i class="pr-1 fas fa-download"></i>
                             <span class="has-tooltip-multiline has-tooltip-bottom"
                                   data-tooltip="Click 'Generate Layer'. Click '+' to open a new tab in the navigator. Select 'Open Existing Layer'. Select 'Upload from local' and upload the generated layer file.">Generate Layer
                             </span>
@@ -34,15 +34,15 @@
             <div class="is-flex is-flex-direction-column ml-6">
                 <label for="generateAdversary" class="pb-2 is-size-6">Generate Adversary</label>
                 <div class="is-flex is-flex-direction-row">
-                    <label for="generateAdversary">
-                        <button id="generateAdversary" class="button is-primary is-small"
-                                onclick="uploadAdversaryLayerButtonFileUpload()"><i class="pr-1 fas fa-upload"></i>
-                            <span class="has-tooltip-multiline has-tooltip-bottom"
-                                  data-tooltip="Create an adversary by selecting techniques in the ATT&CK matrix below, or right click to 'add to selection'. Then download the layer as json (in the toolbar) and upload the Adversary layer file here. You can now use the Adversary profile in CALDERA, under the name given the layer file.">
-                                Create Operation
+                    <input id="generateAdversary" type="file" x-on:change="uploadAdversaryLayer($event.target)" hidden/>
+                    <button class="button is-primary is-small"><i class="pr-1 fas fa-upload"></i>
+                        <span class="has-tooltip-multiline has-tooltip-bottom"
+                              data-tooltip="Create an adversary by selecting techniques in the ATT&CK matrix below, or right click to 'add to selection'. Then download the layer as json (in the toolbar) and upload the Adversary layer file here. You can now use the Adversary profile in CALDERA, under the name given the layer file.">
+                                <label for="generateAdversary">
+                                    Create Operation
+                                </label>
                             </span>
-                        </button>
-                    </label>
+                    </button>
                     <input id='adversaryLayerInput' type='file' hidden/>
                 </div>
             </div>
@@ -52,57 +52,106 @@
         <iframe src="https://mitre-attack.github.io/attack-navigator/enterprise/" class="frame">
         </iframe>
     </div>
+
+    <template x-if="openModal">
+        <div class="modal is-active">
+            <div class="modal-background" @click="openModal = false"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Adversary Created</p>
+                    <h3 x-text="adversaryCreated.name"></h3>
+                    <h3 x-text="adversaryCreated.response"></h3>
+                </header>
+                <section class="modal-card-body">
+                    <div>
+                        <table class="table is-striped">
+                            <thead>
+                            <tr>
+                                <th id="missing-abilities-tactic" class="has-text-grey">Tactic</th>
+                                <th id="missing-abilities-technique" class="has-text-grey">Technique ID</th>
+                            </tr>
+                            </thead>
+                            <tbody id="missing-abilities-body">
+                            <template x-for="(item, index) in adversaryCreated.unmatched_techniques" :key="index">
+                            <tr>
+                                <td x-text="item.tactic"></td>
+                                <td x-text="item.technique_id"></td>
+                            </tr>
+                            </template>
+                            </tbody>
+                        </table>
+                        <p class="has-text-centered">An adversary is only as good as its abilities. APT layers will
+                            cover the same tactics and techniques. Procedures that accurately represent an APT only
+                            come from proper curation of an adversary.</p>
+                    </div>
+                </section>
+                <footer class="modal-card-foot">
+                    <nav class="level">
+                        <div class="level-left">
+                        </div>
+                        <div class="level-right">
+                            <div class="level-item">
+                                <button class="button is-small" @click="openModal = false">Close</button>
+                            </div>
+                        </div>
+                    </nav>
+                </footer>
+            </div>
+        </div>
+    </template>
 </div>
 
-
-<template x-if="openModal">
-    <div class="modal is-active">
-        <div class="modal-background" @click="openModal = false"></div>
-        <div class="modal-card">
-            <header class="modal-card-head">
-                <p class="modal-card-title">Adversary Created</p>
-                <h3 x-text="adversaryCreated.name"></h3>
-                <h3 x-text="adversaryCreated.response"></h3>
-            </header>
-            <section class="modal-card-body">
-                <div>
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th id="missing-abilities-tactic">Tactic</th>
-                            <th id="missing-abilities-technique">Technique ID</th>
-                        </tr>
-                        </thead>
-                        <tbody id="missing-abilities-body">
-                        </tbody>
-                    </table>
-                    <p class="has-text-centered">An adversary is only as good as its abilities. APT layers will
-                        cover the same tactics and techniques. Procedures that accurately represent an APT only
-                        come from proper curation of an adversary.</p>
-                </div>
-            </section>
-            <footer class="modal-card-foot">
-                <nav class="level">
-                    <div class="level-left">
-                    </div>
-                    <div class="level-right">
-                        <div class="level-item">
-                            <button class="button is-small" @click="openModal = false">Close</button>
-                        </div>
-                    </div>
-                </nav>
-            </footer>
-        </div>
-    </div>
-</template>
-
 <script>
-    function alpineOperations() {
+    function alpineCompass() {
         return {
-            openModal: true,
+            openModal: false,
+            selectedAdversaryID: '',
             adversaryCreated: {
                 name: '',
-                response: ''
+                response: '',
+                unmatched_techniques: []
+            },
+
+            generateLayer() {
+                function downloadObjectAsJson(data) {
+                    let exportName = 'layer';
+                    let dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(data, null, 2))}`;
+                    let downloadAnchorNode = document.createElement('a');
+                    downloadAnchorNode.setAttribute('href', dataStr);
+                    downloadAnchorNode.setAttribute('download', `${exportName}.json`);
+                    document.body.appendChild(downloadAnchorNode); // required for firefox
+                    downloadAnchorNode.click();
+                    downloadAnchorNode.remove();
+                }
+
+                const postData = this.selectedAdversaryID ? {
+                    index: 'adversary',
+                    adversary_id: this.selectedAdversaryID
+                } : { index: 'all' };
+                restRequest('POST', postData, downloadObjectAsJson, '/plugin/compass/layer');
+            },
+
+            uploadAdversaryLayer(e) {
+                if (!e || !e.files || !e.files[0].name) toast('Error loading layer file', false);
+
+                let formData = new FormData();
+                formData.append('file', e.files[0]);
+                fetch('/plugin/compass/adversary', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        this.adversaryCreated = {
+                            name: data.name,
+                            response: data.description,
+                            unmatched_techniques: data.unmatched_techniques.map((item) => { return { technique_id: item.technique_id, tactic: item.tactic }; })
+                        };
+                        this.openModal = true;
+                    })
+                    .catch((error) => {
+                        toast('Error uploading adversary layer', false);
+                    });
             }
         };
     }
