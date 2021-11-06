@@ -29,7 +29,7 @@
                         <button id="generateLayer" class="button is-primary"
                                 x-on:click="generateLayer()"><i class="pr-1 fas fa-download"></i>
                             <span class="has-tooltip-multiline has-tooltip-bottom"
-                                  data-tooltip="Click 'Generate Layer'. Click '+' to open a new tab in the navigator. Select 'Open Existing Layer'. Select 'Upload from local' and upload the generated layer file.">Generate Layer
+                                  data-tooltip="In the Navigator, select 'Open Existing Layer' -> 'Upload from local' -> and upload the generated layer file.">Generate Layer
                             </span>
                         </button>
                     </label>
@@ -43,7 +43,7 @@
                     <input id="generateAdversary" type="file" x-on:change="uploadAdversaryLayer($event.target)" hidden/>
                     <button for="generateAdversary" class="button is-primary"><i class="pr-1 fas fa-upload"></i>
                         <span class="has-tooltip-multiline has-tooltip-bottom"
-                              data-tooltip="Create an adversary by selecting techniques in the ATT&CK matrix below, or right click to 'add to selection'. Then download the layer as json (in the toolbar) and upload the Adversary layer file here. You can now use the Adversary profile in CALDERA, under the name given the layer file.">
+                              data-tooltip="Select techniques in the ATT&CK matrix below -> download the layer as json -> then upload the Adversary layer file here. You can now use the Adversary profile in CALDERA, under the name given the layer file.">
                                 <label for="generateAdversary">
                                     Create Operation
                                 </label>
