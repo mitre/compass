@@ -13,29 +13,35 @@
             <div class="is-flex is-flex-direction-column">
                 <label for="layer-selection-adversary" class="pb-2 is-size-6">Generate Layer</label>
                 <div class="is-flex is-flex-direction-row">
-                    <div id="layerSelectionAdversary" class="mt-1 mr-2 select">
-                        <select id="layer-selection-adversary" x-model="selectedAdversaryID">
-                            <option value="" selected>Select an Adversary (All)</option>
-                            {% for adv in adversaries %}
-                            <option value="{{ adv.adversary_id }}">{{ adv.name }}</option>
-                            {% endfor %}}
-                        </select>
+                    <div class="field has-addons">
+                    <div class="control">
+                        <div id="layerSelectionAdversary" class="select">
+                            <select id="layer-selection-adversary" x-model="selectedAdversaryID">
+                                <option value="" selected>Select an Adversary (All)</option>
+                                {% for adv in adversaries %}
+                                <option value="{{ adv.adversary_id }}">{{ adv.name }}</option>
+                                {% endfor %}}
+                            </select>
+                        </div>
                     </div>
-                    <label for="generateLayer" class="pt-2">
-                        <button id="generateLayer" class="button is-primary is-small"
+                    <div class="control">
+                    <label for="generateLayer">
+                        <button id="generateLayer" class="button is-primary"
                                 x-on:click="generateLayer()"><i class="pr-1 fas fa-download"></i>
                             <span class="has-tooltip-multiline has-tooltip-bottom"
-                                  data-tooltip="Click 'Generate Layer'.\n Click '+' to open a new tab in the navigator. Select 'Open Existing Layer'. Select 'Upload from local' and upload the generated layer file.">Generate Layer
+                                  data-tooltip="Click 'Generate Layer'. Click '+' to open a new tab in the navigator. Select 'Open Existing Layer'. Select 'Upload from local' and upload the generated layer file.">Generate Layer
                             </span>
                         </button>
                     </label>
+                    </div>
+                    </div>
                 </div>
             </div>
             <div class="is-flex is-flex-direction-column ml-6">
-                <label class="pb-2 is-size-6 pt-2">Generate Adversary</label>
+                <label class="pb-2 is-size-6">Generate Adversary</label>
                 <div class="is-flex is-flex-direction-row">
                     <input id="generateAdversary" type="file" x-on:change="uploadAdversaryLayer($event.target)" hidden/>
-                    <button for="generateAdversary" class="button is-primary is-small"><i class="pr-1 fas fa-upload"></i>
+                    <button for="generateAdversary" class="button is-primary"><i class="pr-1 fas fa-upload"></i>
                         <span class="has-tooltip-multiline has-tooltip-bottom"
                               data-tooltip="Create an adversary by selecting techniques in the ATT&CK matrix below, or right click to 'add to selection'. Then download the layer as json (in the toolbar) and upload the Adversary layer file here. You can now use the Adversary profile in CALDERA, under the name given the layer file.">
                                 <label for="generateAdversary">
