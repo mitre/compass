@@ -15,7 +15,7 @@
                 <div class="is-flex is-flex-direction-row">
                     <div class="field has-addons">
                     <div class="control">
-                        <div id="layerSelectionAdversary" class="select">
+                        <div id="layerSelectionAdversary" class="select is-small">
                             <select id="layer-selection-adversary" x-model="selectedAdversaryID">
                                 <option value="" selected>Select an Adversary (All)</option>
                                 {% for adv in adversaries %}
@@ -26,7 +26,7 @@
                     </div>
                     <div class="control">
                     <label for="generateLayer">
-                        <button id="generateLayer" class="button is-primary"
+                        <button id="generateLayer" class="button is-primary is-small"
                                 x-on:click="generateLayer()"><i class="pr-1 fas fa-download"></i>
                             <span class="has-tooltip-multiline has-tooltip-bottom"
                                   data-tooltip="In the Navigator, select 'Open Existing Layer' -> 'Upload from local' -> and upload the generated layer file.">Generate Layer
@@ -41,7 +41,7 @@
                 <label class="pb-2 is-size-6">Generate Adversary</label>
                 <div class="is-flex is-flex-direction-row">
                     <input id="generateAdversary" type="file" x-on:change="uploadAdversaryLayer($event.target)" hidden/>
-                    <button for="generateAdversary" class="button is-primary"><i class="pr-1 fas fa-upload"></i>
+                    <button for="generateAdversary" class="button is-primary is-small"><i class="pr-1 fas fa-upload"></i>
                         <span class="has-tooltip-multiline has-tooltip-bottom"
                               data-tooltip="Select techniques in the ATT&CK matrix below -> download the layer as json -> then upload the Adversary layer file here. You can now use the Adversary profile in CALDERA, under the name given the layer file.">
                                 <label for="generateAdversary">
