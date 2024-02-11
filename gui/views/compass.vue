@@ -99,7 +99,7 @@ hr
         input#generateAdversary(type="file", @change="uploadAdversaryLayer($event.target)", hidden)
         button.button.is-primary.is-small(for="generateAdversary")
           i.pr-1.fas.fa-upload
-          span.has-tooltip-multiline.has-tooltip-bottom(v-tooltip="'Select techniques in the ATT&CK matrix below -> download the layer as json -> then upload the Adversary layer file here. You can now use the Adversary profile in CALDERA, under the name given the layer file.'")
+          span.has-tooltip-multiline.has-tooltip-bottom(v-tooltip="'Select techniques in the ATT&CK matrix below -> download the layer as json -> then upload the Adversary layer file here. You can now use the Adversary profile in Caldera, under the name given the layer file.'")
             label(for="generateAdversary") Create Operation
         input#adversaryLayerInput(type="file", hidden)
 div
